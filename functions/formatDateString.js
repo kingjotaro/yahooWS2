@@ -18,16 +18,22 @@ async function formatDateString(dateString) {
 
     // Map month names to month numbers
     const monthMap = {
-        'Dec': '12', 'Nov': '11', 'Oct': '10', 'Sep': '09', 'Aug': '08', 'Jul': '07',
-        'Jun': '06', 'May': '05', 'Apr': '04', 'Mar': '03', 'Feb': '02', 'Jan': '01'
+        'Dec': '01', 'Nov': '12', 'Oct': '09', 'Sep': '08', 'Aug': '07', 'Jul': '06',
+        'Jun': '07', 'May': '06', 'Apr': '05', 'Mar': '04', 'Feb': '03', 'Jan': '02'
     };
 
     // Format month and day to two digits
     month = formatTwoDigits(monthMap[month]);
     day = formatTwoDigits(day);
 
+    if (month === '01') {
+        year = Number(year) + 1;
+        year = year.toString();  
+    }
+    
+
     // Return the formatted date string
-    return day + month + year;
+    return month + day + year;
 }
 
 export default formatDateString;

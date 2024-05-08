@@ -1,66 +1,39 @@
-import puppeteer from "puppeteer";
-import extractDate from "./functions/extractDate.js";
-import formatDateString from "./functions/formatDateString.js";
-import insertStartDate from "./functions/insertStartDate.js";
-import clickDateButton from "./functions/clickDateButton.js";
+import Run from "./main.js";
+import tickers from './ticker.js';
 
-async function Run(ticker) {
-  // Launch the browser
-  const browser = await puppeteer.launch({
-    headless: false,
-    args: ["--no-sandbox"],
-  });
-  const page = await browser.newPage();
+async function executeForTickers() {
+    const failedTickers = []; // Array to store failed tickers
 
-  // Open the page
-  const url = `https://finance.yahoo.com/quote/${ticker}/history`;
-  await page.goto(url);
+    for (let tickerIndex = 0; tickerIndex < tickers.length; tickerIndex++) {
+        const ticker = tickers[tickerIndex];
+        let retryCount = 0;
+        let success = false;
 
-  // Click the button to open the date selector
-  await clickDateButton(page);
+        while (!success && retryCount < 2) {
+            try {
+                await Run(`${ticker}.SA`);
+                success = true;
+            } catch (error) {
+                console.error(`Error executing ${ticker}. Retry ${retryCount + 1}`);
+                retryCount++;
+            }
+        }
 
-  // Insert fake start date
-  await insertStartDate(page, "01011900");
-  console.log("Fake data inserted");
+        if (!success) {
+            console.error(`Failed to execute ${ticker} after ${retryCount} retries.`);
+            failedTickers.push(ticker); // Add the failed ticker to the array
+        }
+    }
 
-  // Wait for a second to ensure the page finishes loading
-  await sleep(1000);
-
-  // Capture the text of the element and filter only the mentioned dates
-  console.log("True initial date", await extractDate(page));
-
-  // Format the extracted date
-  const trueDate = await extractDate(page);
-  console.log(await formatDateString(trueDate));
-
-  // Press the Escape key to close any active dialogs
-  await page.keyboard.press("Escape");
-
-  // Reopen the date selector and insert the true date
-  await clickDateButton(page);
-  await insertStartDate(page, await formatDateString(trueDate));
-
-  // Click to find selected data
-  const donePath = '/html/body/div[1]/main/section/section/section/article/div[1]/div[1]/div[1]/div/div/div[2]/section/div[3]/button[1]';
-  const donePathLoad = await page.waitForXPath(donePath);
-  await donePathLoad.click();
-
-  // Click to download the data
-  const downloadPath = '/html/body/div[1]/main/section/section/section/article/div[1]/div[2]/div/a/span';
-  const downloadPathLoad = await page.waitForXPath(downloadPath);
-  await downloadPathLoad.click();
-
-  console.log(`Download order sent for ${ticker}`);
-
-
-  await browser.close();
+    // Print failed tickers at the end
+    if (failedTickers.length > 0) {
+        console.log('The following tickers failed:');
+        for (const failedTicker of failedTickers) {
+            console.log(failedTicker);
+        }
+    } else {
+        console.log('All tickers were processed successfully.');
+    }
 }
 
-
-
-// Function to wait for a specified time
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-Run("PETR4.SA");
+executeForTickers();
