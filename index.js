@@ -1,5 +1,6 @@
 import puppeteer from "puppeteer";
 import extractDate from "./functions/extractDate.js";
+import rewriteDate from "./functions/rewriteDate.js"
 
 async function Run(ticker) {
   // Inicia o navegador
@@ -37,6 +38,10 @@ async function Run(ticker) {
   // Captura o texto do elemento e filtra apenas as datas mencionadas
   
   console.log("True initial date", await extractDate(page));
+
+  const trueDate = await extractDate(page)
+  console.log(await rewriteDate(trueDate))
+
 }
 
 // Função para aguardar um determinado tempo
