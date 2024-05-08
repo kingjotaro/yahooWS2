@@ -27,7 +27,7 @@ async function formatDateString(dateString) {
     day = formatTwoDigits(day);
 
     // Return the formatted date string
-    return month + day + year;
+    return day + month + year;
 }
 
 export default formatDateString;

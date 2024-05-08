@@ -1,6 +1,8 @@
 import puppeteer from "puppeteer";
 import extractDate from "./functions/extractDate.js";
 import formatDateString from "./functions/formatDateString.js";
+import insertStartDate from "./functions/insertStartDate.js"
+import clickDateButton from "./functions/clickDateButton.js"
 
 async function Run(ticker) {
   // Launch the browser
@@ -15,22 +17,12 @@ async function Run(ticker) {
   await page.goto(url);
 
   // Click the button to open the date selector
-  const dataButtonXPath =
-    '//*[@id="nimbus-app"]/section/section/section/article/div[1]/div[1]/div[1]/button';
-  const dataButton = await page.waitForXPath(dataButtonXPath);
-  await dataButton.click();
+  await clickDateButton(page)
 
-  console.log("Date button clicked");
+  await insertStartDate(page,"01011900")
+  console.log("Fake data inserted")
 
-  // Insert the start date
-  const startDateInputXPath =
-    "/html/body/div[1]/main/section/section/section/article/div[1]/div[1]/div[1]/div/div/div[2]/section/div[2]/input[1]";
-  const startDateInput = await page.waitForXPath(startDateInputXPath);
-  await startDateInput.click();
-  await startDateInput.focus();
-  await startDateInput.type("01011900");
 
-  console.log("Fake initial date inserted");
 
   // Wait for a second to ensure the page finishes loading
   await sleep(1000);
@@ -41,6 +33,11 @@ async function Run(ticker) {
   const trueDate = await extractDate(page)
   console.log(await formatDateString(trueDate))
 
+  await page.keyboard.press('Escape');
+
+  // Click the button to open the date selector
+  await clickDateButton(page)
+  await insertStartDate(page, await formatDateString(trueDate))
 }
 
 // Function to wait for a specified time
