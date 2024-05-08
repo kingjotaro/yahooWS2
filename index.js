@@ -1,6 +1,6 @@
 import puppeteer from "puppeteer";
 import extractDate from "./functions/extractDate.js";
-import rewriteDate from "./functions/rewriteDate.js"
+import formatDateString from "./functions/formatDateString.js"
 
 async function Run(ticker) {
   // Inicia o navegador
@@ -40,7 +40,7 @@ async function Run(ticker) {
   console.log("True initial date", await extractDate(page));
 
   const trueDate = await extractDate(page)
-  console.log(await rewriteDate(trueDate))
+  console.log(await formatDateString(trueDate))
 
 }
 
