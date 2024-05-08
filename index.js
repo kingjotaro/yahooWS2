@@ -1,8 +1,8 @@
 import puppeteer from "puppeteer";
 import extractDate from "./functions/extractDate.js";
 import formatDateString from "./functions/formatDateString.js";
-import insertStartDate from "./functions/insertStartDate.js"
-import clickDateButton from "./functions/clickDateButton.js"
+import insertStartDate from "./functions/insertStartDate.js";
+import clickDateButton from "./functions/clickDateButton.js";
 
 async function Run(ticker) {
   // Launch the browser
@@ -17,12 +17,11 @@ async function Run(ticker) {
   await page.goto(url);
 
   // Click the button to open the date selector
-  await clickDateButton(page)
+  await clickDateButton(page);
 
-  await insertStartDate(page,"01011900")
-  console.log("Fake data inserted")
-
-
+  // Insert fake start date
+  await insertStartDate(page, "01011900");
+  console.log("Fake data inserted");
 
   // Wait for a second to ensure the page finishes loading
   await sleep(1000);
@@ -30,15 +29,34 @@ async function Run(ticker) {
   // Capture the text of the element and filter only the mentioned dates
   console.log("True initial date", await extractDate(page));
 
-  const trueDate = await extractDate(page)
-  console.log(await formatDateString(trueDate))
+  // Format the extracted date
+  const trueDate = await extractDate(page);
+  console.log(await formatDateString(trueDate));
 
-  await page.keyboard.press('Escape');
+  // Press the Escape key to close any active dialogs
+  await page.keyboard.press("Escape");
 
-  // Click the button to open the date selector
-  await clickDateButton(page)
-  await insertStartDate(page, await formatDateString(trueDate))
+  // Reopen the date selector and insert the true date
+  await clickDateButton(page);
+  await insertStartDate(page, await formatDateString(trueDate));
+
+  // Click to find selected data
+  const donePath = '/html/body/div[1]/main/section/section/section/article/div[1]/div[1]/div[1]/div/div/div[2]/section/div[3]/button[1]';
+  const donePathLoad = await page.waitForXPath(donePath);
+  await donePathLoad.click();
+
+  // Click to download the data
+  const downloadPath = '/html/body/div[1]/main/section/section/section/article/div[1]/div[2]/div/a/span';
+  const downloadPathLoad = await page.waitForXPath(downloadPath);
+  await downloadPathLoad.click();
+
+  console.log(`Download order sent for ${ticker}`);
+
+
+  await browser.close();
 }
+
+
 
 // Function to wait for a specified time
 function sleep(ms) {
