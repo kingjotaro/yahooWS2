@@ -5,11 +5,13 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "REMAINING_TICKERS=tickers node index.js",
+    "dev2": "REMAINING_TICKERS=missing_tickers node index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "esm": "^3.2.25",
     "puppeteer": "^19.5.0"
   }
 }
