@@ -6,7 +6,10 @@
   "type": "module",
   "scripts": {
     "dev": "REMAINING_TICKERS=tickers node index.js",
-    "dev2": "REMAINING_TICKERS=missing_tickers node index.js"
+    "dev2": "REMAINING_TICKERS=missing_tickers node index.js",
+    "missing": "node missingTickers.js",
+    "show": "node showFiles.js"
+
   },
   "author": "",
   "license": "ISC",
