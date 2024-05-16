@@ -8,7 +8,7 @@ Make sure you have Node.js installed.
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/kingjotaro/yahooWS2
 ```   
 2. Install dependencies:
 ```bash
